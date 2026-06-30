@@ -1,0 +1,18 @@
+name: Enable GitHub Pages
+on:
+  workflow_dispatch:
+jobs:
+  enable-pages:
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Enable Pages
+        run: |
+          curl -s -X POST https://api.github.com/repos/${{ github.repository }}/pages \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "Content-Type: application/json" \
+            -d '{"source":{"branch":"gh-pages","path":"/"}}' \
+            | cat
