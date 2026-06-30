@@ -1,6 +1,8 @@
 name: Enable GitHub Pages
 on:
-  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [".github/workflows/enable-pages.yml"]
 jobs:
   enable-pages:
     runs-on: ubuntu-latest
@@ -10,9 +12,10 @@ jobs:
     steps:
       - name: Enable Pages
         run: |
-          curl -s -X POST https://api.github.com/repos/${{ github.repository }}/pages \
+          response=$(curl -s -X POST https://api.github.com/repos/${{ github.repository }}/pages \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github+json" \
             -H "Content-Type: application/json" \
-            -d '{"source":{"branch":"gh-pages","path":"/"}}' \
-            | cat
+            -d '{"source":{"branch":"gh-pages","path":"/"}}')
+          echo "$response"
+          echo "$response" | grep -q 'html_url' && echo 'Pages enabled!' || echo 'May already be enabled or error occurred'
